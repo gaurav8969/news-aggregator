@@ -11,7 +11,6 @@ const parser = new Parser();
 const { HfInference } = require('@huggingface/inference');
 const inference = new HfInference('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');
 
-
 app.use(cors());
 
 // Fetch RSS feed and assign unique ID
@@ -64,7 +63,6 @@ app.get('/api/news/:heading', async (req, res) => {
         res.status(500).json({ message: 'Error scraping article', error });
     }
 });
-  
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
