@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function NewsDetail() {
   const { heading } = useParams();
   const [article, setArticle] = useState(null);
+  const API_URL = process.env.NODE_ENV === 'development'
+    ? `http://localhost:5000/api/news/${heading}`
+    : `https://news-aggregator-one-mu.vercel.app/api/news/${heading}`;
 
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/news/${heading}`);
+        const response = await axios.get(API_URL);
         setArticle(response.data);
       } catch (error) {
         console.error('Error fetching article:', error);

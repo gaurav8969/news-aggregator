@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NewsFeed from './components/NewsFeed';
 import NewsDetail from './components/NewsDetail';
