@@ -25,7 +25,7 @@ const NewsFeed = () => {
 
   return (
     <div>
-      <h1>Times of India Top Stories</h1>
+      <h1>Latest Top Stories</h1>
       {loading ? <p>Loading...</p> : (
         <ul>
           {feedItems.map((item) => {
