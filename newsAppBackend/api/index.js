@@ -66,9 +66,10 @@ app.get('/api/news/:heading', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  if(process.env.NODE_ENV === 'development'){
+    console.log(`Server running on port ${PORT}`);
+  }
   console.log(`Access endpoint at http://localhost:${PORT}/api/news`);
-
 });
 
 async function findArticleByHeading(feed, heading) {

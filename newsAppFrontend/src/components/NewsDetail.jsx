@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function NewsDetail() {
   const { heading } = useParams();
   const [article, setArticle] = useState(null);
+  const [showChevron, setShowChevron] = useState(false);
+  const summaryRef = useRef(null); // Ref for the summary section
   const API_URL = process.env.NODE_ENV === 'development'
     ? `http://localhost:5000/api/news/${heading}`
     : `https://news-aggregator-one-mu.vercel.app/api/news/${heading}`;
@@ -21,11 +23,35 @@ function NewsDetail() {
     fetchArticle();
   }, [heading]);
 
+  // Scroll event listener to check when to show/hide chevron
+  useEffect(() => {
+    const handleScroll = () => {
+      if (summaryRef.current) {
+        const summaryTop = summaryRef.current.getBoundingClientRect().top;
+        if (summaryTop > window.innerHeight || summaryTop < 0) {
+          setShowChevron(true);
+        } else {
+          setShowChevron(false);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   if (!article) {
     return <div style={styles.loadingText}>Loading...</div>;
   }
 
   const jpgImage = article.images.find((img) => img.endsWith('.jpg'));
+
+  // Function to scroll to the summary section
+  const scrollToSummary = () => {
+    if (summaryRef.current) {
+      summaryRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -33,10 +59,17 @@ function NewsDetail() {
       {jpgImage && <img src={jpgImage} alt={article.title} style={styles.image} />}
       <p style={styles.text}>{article.fullText}</p>
       <h2 style={styles.subtitle}>Summary</h2>
-      <p style={styles.summary}>{article.summary}</p>
+      <p ref={summaryRef} style={styles.summary}>{article.summary}</p>
       <a href={article.link} target="_blank" rel="noopener noreferrer" style={styles.link}>
         Read more on the original website
       </a>
+
+      {/* Chevron button, displayed conditionally */}
+      {showChevron && (
+        <button style={styles.chevronButton} onClick={scrollToSummary}>
+          <svg style={styles.chevronButton} xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="800px" width="800px" version="1.1" id="Layer_1" viewBox="0 0 407.437 407.437" xml:space="preserve"> <polygon points="386.258,91.567 203.718,273.512 21.179,91.567 0,112.815 203.718,315.87 407.437,112.815 "/> </svg>
+        </button>
+      )}
     </div>
   );
 }
@@ -51,6 +84,7 @@ const styles = {
     backgroundColor: '#f9f9f9',
     borderRadius: '8px',
     textAlign: 'center',
+    position: 'relative',
   },
   title: {
     fontSize: '2rem',
@@ -88,6 +122,22 @@ const styles = {
   loadingText: {
     textAlign: 'center',
     fontSize: '1.2rem',
+  },
+  chevronButton: {
+    position: 'fixed',
+    right: '20px',
+    bottom: '20px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '50%',
+    width: '40px',
+    height: '40px',
+    fontSize: '1.5rem',
+    cursor: 'pointer',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+    boxSizing: 'border-box',
+    padding: '7px'
   },
 };
 
